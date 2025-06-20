@@ -1,25 +1,32 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React, { useState } from "react";
+import "./App.css";
+import ToDoItem from "./ToDoItem";
+import ToDoButton from "./ToDoButton";
 
 function App() {
+  const [items, setItems] = useState<string[]>([]);
+
+  function handleClick() {
+    console.log("button pressed!");
+    const newItem = `Task ${items.length + 1}`;
+    setItems([...items, newItem]);
+  }
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <>
+      <div className="App">
+        <header className="App-header">
+          <h1>Julia's To-Do List</h1>
+        </header>
+        <div>
+          <p>In the body</p>
+          <ToDoButton buttonText={"Add Item"} buttonClick={handleClick} />
+          {items.map((item, index) => (
+            <ToDoItem key={index} text={item} />
+          ))}
+        </div>
+      </div>
+    </>
   );
 }
 
