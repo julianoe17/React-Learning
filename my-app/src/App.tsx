@@ -12,7 +12,7 @@ function App() {
   const [listText, setListText] = useState<string[]>([]);
   const inputRef = useRef<HTMLInputElement>(null);
 
-  function newHandleClick() {
+  function handleButtonClick() {
     // Add input text to list text
     const newToDoItem = inputRef.current?.value;
     if (newToDoItem) {
@@ -20,6 +20,18 @@ function App() {
       // clear input
       if (inputRef.current) {
         inputRef.current.value = "";
+      }
+    }
+  }
+
+  function handleDivClick(e: React.MouseEvent<HTMLDivElement>) {
+    // remove clicked item from list
+    const clickedText = e.currentTarget.textContent;
+    if (clickedText) {
+      const itemIndex = listText.indexOf(clickedText);
+      if (itemIndex > -1) {
+        listText.splice(itemIndex, 1);
+        setListText([...listText]);
       }
     }
   }
@@ -33,10 +45,19 @@ function App() {
         <div>
           <div className="Input-Bar">
             <ItemInput ref={inputRef} />
-            <AddItemButton buttonText="Add Item" buttonClick={newHandleClick} />
+            <AddItemButton
+              buttonText="Add Item"
+              buttonClick={handleButtonClick}
+            />
           </div>
           {listText.map((listItem, index) => (
-            <div key={"listItem" + index}>{listItem}</div>
+            <div
+              key={"listItem" + index}
+              className="strikethrough-hover"
+              onClick={handleDivClick}
+            >
+              {listItem}
+            </div>
           ))}
         </div>
       </div>
