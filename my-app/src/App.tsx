@@ -1,67 +1,54 @@
-import React, { useState, useRef } from "react";
+import React, { useState } from "react";
 import "./App.css";
-import ItemInput from "./ItemInput";
-import AddItemButton from "./ItemButton";
 
-// TODO: hover over an item to see it strikethrough and click to delete
-// TODO: disable Add Item button if text input is empty
 // TODO: Styling
 
+type ToDoItem = { id: number; text: string };
+
 function App() {
-  // want to use useState below to update a paragraph component that hosts all the to-do items
-  const [listText, setListText] = useState<string[]>([]);
-  const inputRef = useRef<HTMLInputElement>(null);
+  const [listText, setListText] = useState<ToDoItem[]>([]);
+  const [inputValue, setInputValue] = useState("");
 
-  function handleButtonClick() {
-    // Add input text to list text
-    const newToDoItem = inputRef.current?.value;
-    if (newToDoItem) {
-      setListText([...listText, newToDoItem]);
-      // clear input
-      if (inputRef.current) {
-        inputRef.current.value = "";
-      }
-    }
-  }
+  const isAddItemButtonDisabled = inputValue.length === 0;
 
-  function handleDivClick(e: React.MouseEvent<HTMLDivElement>) {
-    // remove clicked item from list
-    const clickedText = e.currentTarget.textContent;
-    if (clickedText) {
-      const itemIndex = listText.indexOf(clickedText);
-      if (itemIndex > -1) {
-        listText.splice(itemIndex, 1);
-        setListText([...listText]);
-      }
+  const handleAdd = () => {
+    if (inputValue.trim()) {
+      setListText([...listText, { id: Date.now(), text: inputValue.trim() }]);
+      setInputValue("");
     }
-  }
+  };
+
+  const handleRemove = (id: number) => {
+    setListText(listText.filter((item) => item.id !== id));
+  };
 
   return (
-    <>
-      <div className="App">
-        <header className="App-header">
-          <h1>Julia's To-Do List</h1>
-        </header>
-        <div>
-          <div className="Input-Bar">
-            <ItemInput ref={inputRef} />
-            <AddItemButton
-              buttonText="Add Item"
-              buttonClick={handleButtonClick}
-            />
-          </div>
-          {listText.map((listItem, index) => (
-            <div
-              key={"listItem" + index}
-              className="strikethrough-hover"
-              onClick={handleDivClick}
-            >
-              {listItem}
-            </div>
-          ))}
-        </div>
+    <div className="App">
+      <header className="App-header">
+        <h1>Julia's To-Do List</h1>
+      </header>
+      <div className="Input-Bar">
+        <input
+          value={inputValue}
+          onChange={(e) => setInputValue(e.target.value)}
+          onKeyDown={(e) => e.key === "Enter" && handleAdd()}
+        />
+        <button onClick={handleAdd} disabled={isAddItemButtonDisabled}>
+          Add Item
+        </button>
       </div>
-    </>
+      <ul>
+        {listText.map((item) => (
+          <li
+            key={item.id}
+            className="strikethrough-hover cursor-pointer"
+            onClick={() => handleRemove(item.id)}
+          >
+            {item.text}
+          </li>
+        ))}
+      </ul>
+    </div>
   );
 }
 
